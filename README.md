@@ -1,1 +1,1 @@
-# ECE176_Finalproposal
+# ECE176_Final Proposal
