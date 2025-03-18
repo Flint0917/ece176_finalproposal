@@ -9,7 +9,6 @@ def get_dataloader(batch_size):
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
-    # 下载并加载 CelebA 数据集
     dataset = torchvision.datasets.CelebA(root="./data", split="train", transform=transform, download=True)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     return dataloader

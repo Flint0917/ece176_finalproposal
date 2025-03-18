@@ -28,7 +28,7 @@ class Generator(nn.Module):
             nn.ReLU(True),
 
             nn.ConvTranspose2d(ngf, nc, kernel_size=4, stride=2, padding=1, bias=False),  # (nc, 64, 64)
-            nn.Tanh()  # 输出范围 [-1, 1]
+            nn.Tanh()
         )
 
     def forward(self, input):

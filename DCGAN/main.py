@@ -17,12 +17,9 @@ def weights_init_he(m):
 
 
 def main():
-    # ----------------------------------
-    # 超参数设置
-    # ----------------------------------
-    nz = 100      # 噪声维度
-    ngf = 64      # Generator 特征图数量
-    ndf = 64      # Discriminator 特征图数量
+    nz = 100
+    ngf = 64
+    ndf = 64
     lr = 2e-4
     epochs = 100
     batch_size = 64
@@ -30,30 +27,14 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
-    # ----------------------------------
-    # 数据加载
-    # ----------------------------------
     dataloader = get_dataloader(batch_size)
 
-    # ----------------------------------
-    # 初始化模型
-    # ----------------------------------
     netG = DCGANGenerator(nz=nz, ngf=ngf).to(device)
     netD = DCGANDiscriminator(ndf=ndf).to(device)
-
-    '''
-    weights_init_he(netG)
-    weights_init_he(netD)
-    
-    checkpoint = torch.load("../checkpoints2/epoch_100.pth", map_location=device)
-    netG.load_state_dict(checkpoint['netG_state_dict'])
-    netD.load_state_dict(checkpoint['netD_state_dict'])
-    '''
 
     criterion = nn.BCELoss()
     fixed_noise = torch.randn(64, nz, 1, 1, device=device)
 
-    # 开始训练
     train(netG, netD, dataloader, criterion, device,
           nz=nz, epochs=25, fixed_noise=fixed_noise)
 

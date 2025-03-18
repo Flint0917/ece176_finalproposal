@@ -1,14 +1,10 @@
 import torch.nn as nn
 
 class DCGANGenerator(nn.Module):
-    """
-    输入: (batch_size, nz, 1, 1)
-    输出: (batch_size, 3, 64, 64)
-    """
+
     def __init__(self, nz=100, ngf=64):
         super().__init__()
         self.net = nn.Sequential(
-            # 输入：噪声向量
             nn.ConvTranspose2d(nz, ngf * 8, 4, 1, 0, bias=False),
             nn.BatchNorm2d(ngf * 8),
             nn.ReLU(True),
@@ -26,7 +22,7 @@ class DCGANGenerator(nn.Module):
             nn.ReLU(True),
 
             nn.ConvTranspose2d(ngf, 3, 4, 2, 1, bias=False),
-            nn.Tanh()  # 输出范围为[-1, 1]
+            nn.Tanh()
         )
 
     def forward(self, z):
@@ -34,10 +30,7 @@ class DCGANGenerator(nn.Module):
 
 
 class DCGANDiscriminator(nn.Module):
-    """
-    输入: (batch_size, 3, 64, 64)
-    输出: (batch_size, 1)
-    """
+
     def __init__(self, ndf=64):
         super().__init__()
         self.net = nn.Sequential(
@@ -61,5 +54,4 @@ class DCGANDiscriminator(nn.Module):
         )
 
     def forward(self, x):
-        # 输出 shape: (batch_size, 1, 1, 1)，使用 view() 变为 (batch_size, 1)
         return self.net(x).view(-1, 1)

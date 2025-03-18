@@ -7,10 +7,7 @@ import matplotlib.pyplot as plt
 
 
 def compute_gradient_penalty(D, real_samples, fake_samples, device, lambda_gp=5):
-    """
-    计算梯度惩罚项:
-      GP = λ * E[ (||∇_x D(α*real + (1-α)*fake)||_2 - 1)^2 ]
-    """
+
     batch_size = real_samples.size(0)
     alpha = torch.rand(batch_size, 1, 1, 1, device=device)
     interpolates = (alpha * real_samples + (1 - alpha) * fake_samples).requires_grad_(True)
@@ -32,7 +29,7 @@ def compute_gradient_penalty(D, real_samples, fake_samples, device, lambda_gp=5)
 def save_checkpoint(epoch, netG, netD, optimizerG, optimizerD, loss_g, loss_d, fixed_noise):
     checkpoint_path = f"checkpoints4/epoch_{epoch+1}.pth"
     torch.save({
-        'epoch': epoch + 1,  # 下次恢复时从 epoch+1 开始
+        'epoch': epoch + 1,
         'netG_state_dict': netG.state_dict(),
         'netD_state_dict': netD.state_dict(),
         'optimizerG_state_dict': optimizerG.state_dict(),
@@ -61,9 +58,6 @@ def train_wgan_gp(netG, netD, dataloader, nz=100, epochs=25, n_critic=5, lambda_
             real_imgs = real_imgs.to(device)
             b_size = real_imgs.size(0)
 
-            # ---------------------
-            # 训练判别器 D
-            # ---------------------
             for _ in range(n_critic):
                 optimizerD.zero_grad()
                 noise = torch.randn(b_size, nz, 1, 1, device=device)
@@ -76,9 +70,6 @@ def train_wgan_gp(netG, netD, dataloader, nz=100, epochs=25, n_critic=5, lambda_
                 loss_D.backward()
                 optimizerD.step()
 
-            # ---------------------
-            # 训练生成器 G
-            # ---------------------
             optimizerG.zero_grad()
             noise = torch.randn(b_size, nz, 1, 1, device=device)
             fake_imgs = netG(noise)
@@ -94,11 +85,9 @@ def train_wgan_gp(netG, netD, dataloader, nz=100, epochs=25, n_critic=5, lambda_
             loss_G_history.append(loss_G.item())
             loss_D_history.append(loss_D.item())
 
-        # 保存 checkpoint
         save_checkpoint(epoch, netG, netD, optimizerG, optimizerD, loss_G.item(), loss_D.item(), fixed_noise)
         print(f"Epoch {epoch + 1} checkpoints saved.")
-        
-        # 每个 epoch 结束后保存生成样本
+
         netG.eval()
         with torch.no_grad():
             fake = netG(fixed_noise).detach().cpu()
